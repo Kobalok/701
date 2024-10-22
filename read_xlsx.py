@@ -3,6 +3,8 @@ import pandas as pd
 import time
 import xml.etree.ElementTree as ET
 from datetime import datetime as dt
+import csv
+
 
 
 mPapka=''
@@ -52,11 +54,7 @@ def createXML(filename,param1,param2,msgtin):
                 item.text = msgtin
         tree.write(filename)
 
-    #msgtin = ET.Element('new_tag')
-    #msgtin.set('attribute_name', 'attribute_value')
-    #msgtin.text = 'element_text'
-    #root.append(mdocuments)
-    
+
     
   
 
@@ -91,8 +89,9 @@ def FindUL(mStr):
 
 
 if __name__ == "__main__":
-    excel_data = pd.read_excel('11102024_701.xlsx',dtype=object)
-    data = pd.DataFrame(excel_data, columns=['РК', 'Аптека', 'SGTIN','MD аптеки','MD поставщика'])
+    my_dict = {}
+    excel_data = pd.read_excel('in1.xlsx',dtype=object)
+    data = pd.DataFrame(excel_data, columns=['РК', 'Аптека', 'SGTIN','MD аптеки','MD поставщика','Номер','PUT'])
     #print(data.head())
     for row in data.itertuples():
         mPapka=FindUL(delProbel(row[1]))
@@ -100,11 +99,23 @@ if __name__ == "__main__":
         mSGTIN=delProbel(row[3])
         MDa=delProbel(row[4])
         MDp=delProbel(row[5])
+        mpn=delProbel(row[6])
+        mPut=delProbel(row[7])
+        mPut=mPut[:str(mPut).find("SRV.apt.rigla.ru,8703")+21]
+        if mPut in my_dict:
+            if str(my_dict[mPut]).find(mpn)==-1:
+                my_dict[mPut]=my_dict[mPut]+','+'\''+mpn+'\''
+        else:
+        # Если ключа нет, добавляем его
+            my_dict[mPut] = '\''+mpn+'\''
         if os.path.isdir(mPapka):
             print("Папка существует!")
         else:
             os.mkdir(mPapka)
         createXML(mPapka+'/'+mApt+'.xml',MDa,MDp,mSGTIN)
-                    
-        
+    #print(my_dict)
+    with open('4pyquery.csv', 'w', encoding='utf8',newline='') as csvout:
+        spamwriter = csv.writer(csvout, delimiter=';') #quoting=csv.QUOTE_NONE                
+        for key in my_dict:
+            spamwriter.writerow([key,my_dict[key]])
         
