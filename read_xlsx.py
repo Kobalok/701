@@ -62,6 +62,7 @@ def delProbel(mStr):
     return str(mStr).replace(' ','')
 
 def FindUL(mStr):
+    mUL='Неизвестное ЮЛ'
     if mStr.find("Ригла")!=-1:
         mUL='Ригла'
     if mStr.find("Оз")!=-1:
@@ -80,6 +81,11 @@ def FindUL(mStr):
         mUL='АВРОРА'
     if mStr.find("Вита")!=-1:
         mUL='Вита Фарм'
+    if mStr.find("Н-Аптека")!=-1:
+        mUL='Н-Аптека'
+    if mStr.find("Архимед")!=-1:
+        mUL='Архимед'
+       
 
 
 
